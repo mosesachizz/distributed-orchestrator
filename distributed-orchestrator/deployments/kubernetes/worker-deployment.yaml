@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator-worker
+  labels:
+    app: orchestrator
+    component: worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: orchestrator
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: orchestrator
+        component: worker
+    spec:
+      containers:
+      - name: worker
+        image: orchestrator-worker:latest
+        env:
+        - name: ETCD_ENDPOINTS
+          value: "etcd:2379"
+        - name: MASTER_ADDRESS
+          value: "orchestrator-master:9090"
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator-worker
+  labels:
+    app: orchestrator
+    component: worker
+spec:
+  selector:
+    app: orchestrator
+    component: worker
+  ports:
+  - port: 9100
+    targetPort: 9100
+  type: ClusterIP

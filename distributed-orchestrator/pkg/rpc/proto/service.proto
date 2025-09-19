@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package orchestrator;
+
+option go_package = "distributed-orchestrator/pkg/rpc/proto";
+
+service Orchestrator {
+  rpc RegisterWorker(RegisterWorkerRequest) returns (RegisterWorkerResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc TaskUpdate(TaskUpdateRequest) returns (TaskUpdateResponse);
+  rpc GetNodeStats(GetNodeStatsRequest) returns (GetNodeStatsResponse);
+}
+
+message RegisterWorkerRequest {
+  string node_id = 1;
+  string address = 2;
+  Resource capacity = 3;
+  map<string, string> labels = 4;
+}
+
+message RegisterWorkerResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HeartbeatRequest {
+  string node_id = 1;
+  Resource allocated = 2;
+  repeated string running_tasks = 3;
+}
+
+message HeartbeatResponse {
+  bool success = 1;
+  repeated TaskAssignment assignments = 2;
+}
+
+message TaskAssignment {
+  string task_id = 1;
+  TaskSpec task = 2;
+}
+
+message TaskUpdateRequest {
+  string task_id = 1;
+  string node_id = 2;
+  TaskState state = 3;
+  int32 exit_code = 4;
+  string output = 5;
+}
+
+message TaskUpdateResponse {
+  bool success = 1;
+}
+
+message GetNodeStatsRequest {
+  string node_id = 1;
+}
+
+message GetNodeStatsResponse {
+  Resource capacity = 1;
+  Resource allocated = 2;
+  int32 total_tasks = 3;
+  int32 running_tasks = 4;
+}
+
+message Resource {
+  int64 cpu = 1;    // millicores
+  int64 memory = 2; // megabytes
+}
+
+message TaskSpec {
+  string id = 1;
+  string name = 2;
+  string image = 3;
+  repeated string command = 4;
+  map<string, string> env = 5;
+  Resource resources = 6;
+}
+
+enum TaskState {
+  PENDING = 0;
+  ASSIGNED = 1;
+  RUNNING = 2;
+  COMPLETED = 3;
+  FAILED = 4;
+}

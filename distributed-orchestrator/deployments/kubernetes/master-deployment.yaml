@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator-master
+  labels:
+    app: orchestrator
+    component: master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orchestrator
+      component: master
+  template:
+    metadata:
+      labels:
+        app: orchestrator
+        component: master
+    spec:
+      containers:
+      - name: master
+        image: orchestrator-master:latest
+        ports:
+        - containerPort: 8080
+        - containerPort: 9090
+        env:
+        - name: ETCD_ENDPOINTS
+          value: "etcd:2379"
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator-master
+  labels:
+    app: orchestrator
+    component: master
+spec:
+  selector:
+    app: orchestrator
+    component: master
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  - name: grpc
+    port: 9090
+    targetPort: 9090
+  type: ClusterIP
