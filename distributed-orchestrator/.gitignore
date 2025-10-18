@@ -1,0 +1,41 @@
+# Binaries
+bin/
+dist/
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+coverage.html
+coverage.out
+profile.out
+
+# Docker
+.docker/
+
+# Kubernetes
+kubeconfig
+
+# Protobuf generated files
+*.pb.go
