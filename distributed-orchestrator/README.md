@@ -65,7 +65,7 @@ func (a *BinPackingAlgorithm) SelectNode(task *types.Task, nodes []*types.Node) 
 ### Running with Docker Compose
 1. **Clone the repository**  
 ```bash
-git clone https://github.com/your-username/distributed-orchestrator.git
+git clone https://github.com/mosesachizz/distributed-orchestrator.git
 cd distributed-orchestrator
 ```
 2. **Start the cluster**  
